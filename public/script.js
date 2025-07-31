@@ -1,23 +1,4 @@
-const form = document.getElementById('registration-form');
-const successMessage = document.getElementById('success-message');
-
-function saveToFile(name, email, password) {
-    const existingData = localStorage.getItem('registrations') || '';
-    const newRecord = `\n--- Новая регистрация ---\nИмя: ${name}\nEmail: ${email}\nПароль: ${password}\nДата: ${new Date().toLocaleString()}\n`;
-    const allData = existingData + newRecord;
-    
-    localStorage.setItem('registrations', allData);
-    
-    const blob = new Blob([allData], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'registrations.txt';
-    link.click();
-    URL.revokeObjectURL(url);
-}
-
-form.addEventListener('submit', function(e) {
+document.getElementById('registration-form').addEventListener('submit', function(e) {
     e.preventDefault();
     
     const name = document.getElementById('name').value;
@@ -25,15 +6,21 @@ form.addEventListener('submit', function(e) {
     const password = document.getElementById('password').value;
     
     if (name && email && password) {
-        saveToFile(name, email, password);
+        const data = `Имя: ${name}\nEmail: ${email}\nПароль: ${password}\nДата: ${new Date().toLocaleString()}\n\n`;
         
-        form.classList.add('hidden');
-        successMessage.classList.remove('hidden');
+        const blob = new Blob([data], { type: 'text/plain' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'registration.txt';
+        link.click();
+        
+        document.getElementById('registration-form').style.display = 'none';
+        document.getElementById('success-message').style.display = 'block';
         
         setTimeout(() => {
-            form.classList.remove('hidden');
-            successMessage.classList.add('hidden');
-            form.reset();
+            document.getElementById('registration-form').style.display = 'block';
+            document.getElementById('success-message').style.display = 'none';
+            document.getElementById('registration-form').reset();
         }, 2000);
     }
 });
